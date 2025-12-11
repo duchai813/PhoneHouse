@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --secondary: #f8f9fa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left p {
+            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-count {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 16px 28px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 22px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Nút Trang chủ */
+        .home-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-icon {
+            font-size: 20px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .menu-item {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .menu-icon {
+            font-size: 22px;
+            margin-right: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+            box-shadow: 0 4px 15px rgba(134, 143, 150, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(134, 143, 150, 0.5);
+        }
+
+        /* Nút Quay lại (dưới bảng) */
+        .back-btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--primary);
+        }
+
+        .back-icon {
+            font-size: 18px;
+        }
+
+        /* Search and Filter Section */
+        .search-filter {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        thead {
+            background: linear-gradient(to right, var(--secondary), #e9ecef);
+        }
+
+        th {
+            padding: 20px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #495057;
+            border: none;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f3f4;
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(to right, #f8f9ff, #fff);
+            transform: scale(1.002);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        td {
+            padding: 18px 16px;
+            border: none;
+            color: #555;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        /* Role Badges */
+        .role-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            min-width: 80px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .role-user {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .role-mod {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 2px 8px rgba(51, 154, 240, 0.3);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Export Section */
+        .export-section {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .export-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .export-icon {
+            font-size: 28px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .export-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            letter-spacing: 0.5px;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .export-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            min-height: 110px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .export-btn-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .export-btn:hover .export-btn-icon {
+            transform: scale(1.2) translateY(-5px);
+        }
+
+        .export-btn-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .csv-btn {
+            background: linear-gradient(135deg, var(--success), #059669);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .pdf-btn {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .excel-btn {
+            background: linear-gradient(135deg, var(--info), #1d4ed8);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .more-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .page-btn {
+            padding: 10px 18px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        /* Footer */
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(to right, var(--secondary), #e9ecef);
+            border-radius: 12px;
+            font-size: 14px;
+            color: #666;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content {
+                padding: 30px;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                border-radius: 16px;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            .header-left h1 {
+                font-size: 28px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .user-count {
+                padding: 12px 20px;
+                font-size: 18px;
+            }
+
+            .home-btn {
+                padding: 10px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .back-btn-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .export-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .export-btn {
+                min-height: 100px;
+                padding: 15px 10px;
+            }
+
+            .export-btn-icon {
+                font-size: 30px;
+            }
+
+            .table-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .home-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1><span>👑</span> Quản lý tài khoản</h1>
+                <p>Quản lý và xem thông tin tất cả người dùng trong hệ thống</p>
+            </div>
+
+            <div class="header-actions">
+                <!-- Nút Trở về trang chủ ở Header -->
+                <a th:href="@{/admin}" class="home-btn">
+                    <span class="home-icon">🏠</span>
+                    <span>Trang chủ</span>
+                </a>
+
+                <div class="user-count">
+                    <span>📊</span>
+                    <span th:text="${users.size()}">0</span> tài khoản
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="top-bar">
+            <a th:href="@{/admin/users}" class="menu-item">
+                <div class="menu-icon">👥</div>
+                <span>Danh sách tài khoản</span>
+            </a>
+
+            <div class="actions">
+                <a th:href="@{/admin/users/add}" class="btn btn-primary">
+                    <span>➕</span>
+                    <span>Thêm tài khoản</span>
+                </a>
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <span>🔄</span>
+                    <span>Tải lại</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Tìm kiếm tài khoản..." id="searchInput">
+            </div>
+            <select class="filter-select" id="roleFilter">
+                <option value="">Tất cả quyền</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="MOD">MOD</option>
+                <option value="USER">USER</option>
+            </select>
+            <select class="filter-select" id="statusFilter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="active">Đang hoạt động</option>
+                <option value="inactive">Ngừng hoạt động</option>
+                <option value="locked">Đã khóa</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>👤 Username</th>
+                    <th>📝 Họ tên</th>
+                    <th>📧 Email</th>
+                    <th>📱 Số điện thoại</th>
+                    <th>🔐 Quyền hạn</th>
+                    <th>📊 Trạng thái</th>
+                    <th>⚙️ Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u, st : ${users}" class="user-row">
+                    <td th:text="${st.index + 1}">1</td>
+                    <td th:text="${u.username}">username</td>
+                    <td th:text="${u.fullname}">Full Name</td>
+                    <td th:text="${u.email}">email@example.com</td>
+                    <td th:text="${u.phone}">0123456789</td>
+                    <td>
+                        <span th:classappend="'role-badge ' + (${u.role} == 'ADMIN' ? 'role-admin' : (${u.role} == 'MOD' ? 'role-mod' : 'role-user'))"
+                              th:text="${u.role}">USER</span>
+                    </td>
+                    <td>
+                        <span class="status-badge active">✅ Hoạt động</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{'/admin/users/edit/' + ${u.username}}"
+                               class="btn-sm btn-edit">
+                                ✏️ Sửa
+                            </a>
+                            <a th:href="@{'/admin/users/reset/' + ${u.username}}"
+                               class="btn-sm btn-reset">
+                                🔑 Reset
+                            </a>
+                            <a th:href="@{'/admin/users/delete/' + ${u.username}}"
+                               class="btn-sm btn-delete"
+                               onclick="return confirm('❌ Bạn có chắc chắn muốn xóa tài khoản này?');">
+                                🗑️ Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Nút Quay lại và Phân trang -->
+        <div class="back-btn-container">
+            <!-- Nút Quay lại trang chủ (dưới bảng) -->
+            <a th:href="@{/}" class="back-btn">
+                <span class="back-icon">←</span>
+                <span>Trở về trang chủ</span>
+            </a>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn">←</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">→</button>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <div class="export-header">
+                <span class="export-icon">📤</span>
+                <span class="export-title">Xuất dữ liệu</span>
+            </div>
+
+            <div class="export-buttons">
+                <a class="export-btn csv-btn" th:href="@{/admin/users/export/csv}">
+                    <span class="export-btn-icon">📄</span>
+                    <span class="export-btn-text">CSV</span>
+                </a>
+
+                <a class="export-btn pdf-btn" th:href="@{/admin/users/export/pdf}">
+                    <span class="export-btn-icon">📑</span>
+                    <span class="export-btn-text">PDF</span>
+                </a>
+
+                <a class="export-btn excel-btn" th:href="@{/admin/users/export/excel}">
+                    <span class="export-btn-icon">📊</span>
+                    <span class="export-btn-text">Excel</span>
+                </a>
+
+                <button class="export-btn more-btn" onclick="toggleExportOptions()">
+                    <span class="export-btn-icon">⋯</span>
+                    <span class="export-btn-text">Khác</span>
+                </button>
+            </div>
+
+            <!-- Additional Export Options -->
+            <div id="extraExportOptions" style="display: none;">
+                <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                    <a th:href="@{/admin/users/export/json}" class="btn-sm"
+                       style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                        { } JSON
+                    </a>
+                    <a th:href="@{/admin/users/export/xml}" class="btn-sm"
+                       style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">
+                        &lt;&gt; XML
+                    </a>
+                    <button class="btn-sm"
+                            style="background: linear-gradient(135deg, #6b7280, #4b5563); color: white;"
+                            onclick="window.print()">
+                        🖨️ In ấn
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 12px 16px; background: rgba(59, 130, 246, 0.08);
+                 border-radius: 8px; border-left: 4px solid var(--info); display: flex; align-items: center; gap: 10px;">
+                <span style="color: var(--info);">ℹ️</span>
+                <span style="font-size: 14px; color: #475569; font-weight: 500;">
+                    Dữ liệu sẽ được xuất theo bộ lọc hiện tại
+                </span>
+            </div>
+        </div>
+
+        <!-- Table Footer -->
+        <div class="table-footer">
+            <div class="footer-info">
+                <span>💡</span>
+                <span>Hiển thị tất cả tài khoản trong hệ thống</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 600;">Tổng: </span>
+                <span th:text="${users.size()}" style="color: var(--primary); font-weight: 700;">0</span>
+                <span>tài khoản</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Row animation
+        const rows = document.querySelectorAll('.user-row');
+        rows.forEach((row, index) => {
+            row.style.animationDelay = `${index * 0.05}s`;
+            row.classList.add('fade-in');
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const roleFilter = document.getElementById('roleFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const userRows = document.querySelectorAll('.user-row');
+
+        function filterUsers() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const roleValue = roleFilter.value;
+            const statusValue = statusFilter.value;
+
+            userRows.forEach(row => {
+                const username = row.cells[1].textContent.toLowerCase();
+                const fullname = row.cells[2].textContent.toLowerCase();
+                const role = row.cells[5].querySelector('.role-badge').textContent;
+                const status = row.cells[6].querySelector('.status-badge').textContent;
+
+                const matchesSearch = !searchTerm ||
+                    username.includes(searchTerm) ||
+                    fullname.includes(searchTerm);
+                const matchesRole = !roleValue || role === roleValue;
+                const matchesStatus = !statusValue ||
+                    (statusValue === 'active' && status.includes('Hoạt động')) ||
+                    (statusValue === 'inactive' && status.includes('Ngừng')) ||
+                    (statusValue === 'locked' && status.includes('khóa'));
+
+                row.style.display = matchesSearch && matchesRole && matchesStatus ? '' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterUsers);
+        roleFilter.addEventListener('change', filterUsers);
+        statusFilter.addEventListener('change', filterUsers);
+
+        // Pagination
+        const pageBtns = document.querySelectorAll('.page-btn');
+        pageBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                pageBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+
+    function toggleExportOptions() {
+        const extraOptions = document.getElementById('extraExportOptions');
+        extraOptions.style.display = extraOptions.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Ripple effect for buttons
+    document.querySelectorAll('.btn, .export-btn, .btn-sm, .home-btn, .back-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+                pointer-events: none;
+            `;
+
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Add ripple animation style
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Keyboard shortcut for home button (Alt + H)
+    document.addEventListener('keydown', function(e) {
+        if (e.altKey && e.key === 'h') {
+            const homeBtn = document.querySelector('.home-btn');
+            if (homeBtn) {
+                homeBtn.click();
+            }
+        }
+    });
+</script>
+</body>
+</html>

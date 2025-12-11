@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${mode == 'edit'} ? 'Sửa tài khoản' : 'Thêm tài khoản'">Quản lý tài khoản</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .form-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-header p {
+            opacity: 0.95;
+            font-size: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-body {
+            padding: 40px;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fff5f5, #ffe3e3);
+            color: #c92a2a;
+            border: 2px solid #ffa8a8;
+            box-shadow: 0 4px 12px rgba(201, 42, 42, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #495057;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-control:hover, .form-select:hover {
+            border-color: #cbd5e0;
+        }
+
+        .form-control[readonly] {
+            background: #f8f9fa;
+            cursor: not-allowed;
+            color: #6c757d;
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+            font-style: italic;
+        }
+
+        .form-select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23667eea' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 12px;
+            padding-right: 40px;
+        }
+
+        .input-icon {
+            font-size: 18px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .password-hint {
+            font-size: 13px;
+            color: #868e96;
+            margin-top: 6px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .required-badge {
+            color: #fa5252;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .form-header {
+                padding: 25px 25px;
+            }
+
+            .form-header h2 {
+                font-size: 26px;
+            }
+
+            .form-body {
+                padding: 25px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Fade in animation for form groups */
+        .form-group {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="form-wrapper">
+        <div class="form-header">
+            <h2>
+                <span th:if="${mode == 'edit'}">✏️</span>
+                <span th:unless="${mode == 'edit'}">➕</span>
+                <span th:text="${mode == 'edit'} ? 'Sửa tài khoản' : 'Thêm tài khoản mới'">Thêm tài khoản mới</span>
+            </h2>
+            <p th:text="${mode == 'edit'} ? 'Cập nhật thông tin tài khoản người dùng' : 'Điền thông tin để tạo tài khoản mới'">
+                Điền thông tin để tạo tài khoản mới
+            </p>
+        </div>
+
+        <div class="form-body">
+            <!-- Hiển thị lỗi -->
+            <div th:if="${error}" class="alert alert-danger">
+                <span style="font-size: 20px;">⚠️</span>
+                <span th:text="${error}">Có lỗi xảy ra</span>
+            </div>
+
+            <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">👤</span>
+                        <span>Username</span>
+                        <span class="required-badge">*</span>
+                    </label>
+                    <input th:field="*{username}"
+                           class="form-control"
+                           th:readonly="${mode == 'edit'}"
+                           placeholder="Nhập username"
+                           required>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">🔐</span>
+                        <span>Mật khẩu</span>
+                        <span th:if="${mode == 'add'}" class="required-badge">*</span>
+                    </label>
+                    <input th:field="*{password}"
+                           type="password"
+                           class="form-control"
+                           th:required="${mode == 'add'}"
+                           th:placeholder="${mode == 'edit'} ? 'Để trống nếu không đổi mật khẩu' : 'Nhập mật khẩu'">
+                    <div th:if="${mode == 'edit'}" class="password-hint">
+                        <span>💡</span>
+                        <span>Để trống nếu không muốn thay đổi mật khẩu</span>
+                    </div>
+                </div>
+
+                <!-- Fullname -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">📝</span>
+                        <span>Họ tên</span>
+                    </label>
+                    <input th:field="*{fullname}"
+                           class="form-control"
+                           placeholder="Nhập họ và tên đầy đủ">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">📧</span>
+                        <span>Email</span>
+                    </label>
+                    <input th:field="*{email}"
+                           type="email"
+                           class="form-control"
+                           placeholder="example@email.com">
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">📱</span>
+                        <span>Số điện thoại</span>
+                    </label>
+                    <input th:field="*{phone}"
+                           class="form-control"
+                           placeholder="0123456789">
+                </div>
+
+                <!-- Role -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span class="input-icon">🔑</span>
+                        <span>Quyền hạn</span>
+                    </label>
+                    <select th:field="*{role}" class="form-select">
+                        <option value="USER">👥 USER - Người dùng thông thường</option>
+                        <option value="MOD">🛡️ MOD - Quản trị viên</option>
+                        <option value="ADMIN">⚡ ADMIN - Quản trị cấp cao</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button class="btn btn-primary" type="submit">
+                        <span th:if="${mode == 'edit'}">💾</span>
+                        <span th:unless="${mode == 'edit'}">✨</span>
+                        <span th:text="${mode == 'edit'} ? 'Lưu thay đổi' : 'Thêm tài khoản'">Thêm tài khoản</span>
+                    </button>
+                    <a href="/admin/users" class="btn btn-secondary">
+                        <span>↩️</span>
+                        <span>Quay lại</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Thêm hiệu ứng focus cho input
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Xác nhận khi submit form
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('.btn-primary');
+            submitBtn.innerHTML = '<span>⏳</span><span>Đang xử lý...</span>';
+            submitBtn.disabled = true;
+        });
+    });
+</script>
+</body>
+</html>

@@ -48,4 +48,40 @@ public class AuthController {
         session.invalidate();
         return "redirect:/login";
     }
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("account", new Account());
+        return "register"; // trỏ tới file register.html
+    }
+
+    // Xử lý submit form đăng ký
+    @PostMapping("/register")
+    public String processRegister(
+            @ModelAttribute("account") Account account,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model) {
+
+        // 1. Kiểm tra trùng username
+        if (accountRepo.existsById(account.getUsername())) {
+            model.addAttribute("error", "Username đã tồn tại, hãy chọn tên khác.");
+            return "register";
+        }
+
+        // 2. Kiểm tra password nhập lại
+        if (!account.getPassword().equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu nhập lại không khớp.");
+            return "register";
+        }
+
+        // 3. Set role mặc định cho tài khoản mới
+        account.setRole("USER");
+
+        // TODO: sau này bạn có thể mã hóa mật khẩu ở đây
+
+        // 4. Lưu vào DB
+        accountRepo.save(account);
+
+        // 5. Chuyển về trang login + hiển thị thông báo
+        return "redirect:/login?registered=true";
+    }
 }
