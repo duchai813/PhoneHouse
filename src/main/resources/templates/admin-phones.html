@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sản phẩm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            margin-bottom: 35px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f1f3f5;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3436;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            padding-right: 45px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-hint {
+            color: #6c757d;
+            font-size: 12px;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .btn-submit {
+            padding: 16px 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .table-header {
+            padding: 30px 40px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        thead th {
+            padding: 20px 20px;
+            text-align: left;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f3f5;
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+            transform: translateX(5px);
+        }
+
+        tbody td {
+            padding: 20px 20px;
+            color: #2d3436;
+            vertical-align: middle;
+        }
+
+        .product-id {
+            font-weight: 800;
+            color: #667eea;
+            font-size: 15px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #2d3436;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .product-specs {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .color-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+            margin-right: 6px;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .stock-good {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .stock-low {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+
+        .stock-out {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+        }
+
+        @media (max-width: 1200px) {
+            .table-wrapper {
+                overflow-x: scroll;
+            }
+            table {
+                min-width: 1000px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .form-card,
+            .table-header {
+                padding: 25px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            tbody td,
+            thead th {
+                padding: 15px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <span>📱</span>
+            Quản lý sản phẩm
+        </h1>
+        <a th:href="@{/admin}" class="back-link">
+            ← Về dashboard
+        </a>
+    </div>
+
+    <!-- Form thêm/sửa sản phẩm -->
+    <div class="form-card">
+        <div class="card-header">
+            <span style="font-size: 28px;">✨</span>
+            <h2 class="card-title">Thêm / Sửa sản phẩm</h2>
+        </div>
+
+        <form th:action="@{/admin/phones/save}" th:object="${phone}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>📝 Tên sản phẩm</label>
+                    <input type="text" th:field="*{name}" placeholder="VD: iPhone 15 Pro Max" required>
+                    <small class="form-hint">💡 Không cần thêm màu vào tên</small>
+                </div>
+
+                <div class="form-group">
+                    <label>🎨 Màu sắc</label>
+                    <select th:field="*{color}" required>
+                        <option value="">-- Chọn màu --</option>
+                        <option value="Đen">Đen</option>
+                        <option value="Trắng">Trắng</option>
+                        <option value="Xanh">Xanh</option>
+                        <option value="Vàng">Vàng</option>
+                        <option value="Hồng">Hồng</option>
+                        <option value="Tím">Tím</option>
+                        <option value="Đỏ">Đỏ</option>
+                        <option value="Xám">Xám</option>
+                        <option value="Vàng">Vàng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>💰 Giá (đ)</label>
+                    <input type="number" th:field="*{price}" placeholder="Nhập giá" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📦 Số lượng tồn kho</label>
+                    <input type="number" th:field="*{quantity}" placeholder="Nhập số lượng" required>
+                </div>
+
+                <div class="form-group">
+                    <label>🏷️ Hãng (Brand)</label>
+                    <select th:field="*{brand.id}" required>
+                        <option value="">-- Chọn hãng --</option>
+                        <option th:each="b : ${brands}"
+                                th:value="${b.id}"
+                                th:text="${b.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>💾 ROM</label>
+                    <input type="text" th:field="*{rom}" placeholder="VD: 128GB" required>
+                </div>
+
+                <div class="form-group">
+                    <label>⚡ RAM</label>
+                    <input type="text" th:field="*{ram}" placeholder="VD: 8GB" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📱 Màn hình</label>
+                    <input type="text" th:field="*{screen}" placeholder="VD: 6.1 inch">
+                </div>
+
+                <div class="form-group">
+                    <label>🔋 Pin</label>
+                    <input type="text" th:field="*{battery}" placeholder="VD: 3279 mAh">
+                </div>
+
+                <div class="form-group">
+                    <label>🖼️ Ảnh (tên file)</label>
+                    <input type="text" th:field="*{image}" placeholder="VD: iphone15-black.jpg" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>📄 Mô tả</label>
+                    <input type="text" th:field="*{description}" placeholder="Nhập mô tả sản phẩm">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span>💾</span>
+                Lưu sản phẩm
+            </button>
+        </form>
+    </div>
+
+    <!-- Bảng danh sách sản phẩm -->
+    <div class="table-card">
+        <div class="table-header">
+            <div class="card-header" style="border: none; margin: 0; padding: 0;">
+                <span style="font-size: 28px;">📋</span>
+                <h2 class="card-title">Danh sách sản phẩm</h2>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sản phẩm</th>
+                    <th>Thông số</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${phones}">
+                    <td><span class="product-id">#[[${p.id}]]</span></td>
+
+                    <td>
+                        <div class="product-name">[[${p.name}]]</div>
+                        <div class="product-specs">
+                            <span class="color-badge">[[${p.color}]]</span>
+                            <small>[[${p.brand.name}]]</small>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="product-specs">
+                            💾 [[${p.rom}]] | ⚡ [[${p.ram}]]
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="product-price">[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]]đ</span>
+                    </td>
+
+                    <td>
+                        <span class="stock-badge stock-good" th:if="${p.quantity > 10}">
+                            ✓ [[${p.quantity}]]
+                        </span>
+                        <span class="stock-badge stock-low" th:if="${p.quantity > 0 && p.quantity <= 10}">
+                            ⚠ [[${p.quantity}]]
+                        </span>
+                        <span class="stock-badge stock-out" th:if="${p.quantity == 0}">
+                            ✕ Hết
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{'/admin/phones/edit/' + ${p.id}}" class="btn-action btn-edit">
+                                ✏️ Sửa
+                            </a>
+                            <a th:href="@{'/admin/phones/delete/' + ${p.id}}"
+                               class="btn-action btn-delete"
+                               onclick="return confirm('⚠️ Bạn có chắc muốn xóa sản phẩm này không?');">
+                                🗑️ Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

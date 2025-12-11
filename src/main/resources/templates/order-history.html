@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lịch sử mua hàng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h2 {
+            font-size: 32px;
+            color: #2d3436;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .orders-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        thead th {
+            padding: 20px 15px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f3f5;
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 20px 15px;
+            color: #2d3436;
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .order-date {
+            color: #636e72;
+            font-size: 14px;
+        }
+
+        .order-address {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .btn-view {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #636e72;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .orders-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h2>📋 Lịch sử mua hàng</h2>
+        <a th:href="@{/}" class="back-link">
+            ← Quay lại trang chủ
+        </a>
+    </div>
+
+    <div class="orders-container">
+        <table th:if="${#lists.size(orders) > 0}">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày tạo</th>
+                <th>Địa chỉ</th>
+                <th>Trạng thái</th>
+                <th>Chi tiết</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${orders}">
+                <td><span class="order-id">#[[${o.id}]]</span></td>
+                <td><span class="order-date">[[${o.createDate}]]</span></td>
+                <td><div class="order-address">[[${o.address}]]</div></td>
+                <td>
+                    <span class="status-badge status-pending" th:if="${o.status} == 'Pending'">[[${o.status}]]</span>
+                    <span class="status-badge status-processing" th:if="${o.status} == 'Processing'">[[${o.status}]]</span>
+                    <span class="status-badge status-completed" th:if="${o.status} == 'Completed'">[[${o.status}]]</span>
+                    <span class="status-badge status-cancelled" th:if="${o.status} == 'Cancelled'">[[${o.status}]]</span>
+                    <span class="status-badge status-pending" th:unless="${o.status} == 'Pending' or ${o.status} == 'Processing' or ${o.status} == 'Completed' or ${o.status} == 'Cancelled'">[[${o.status}]]</span>
+                </td>
+                <td>
+                    <a th:href="@{'/order/' + ${o.id}}" class="btn-view">
+                        👁️ Xem
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:unless="${#lists.size(orders) > 0}" class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <div class="empty-state-text">Bạn chưa có đơn hàng nào</div>
+            <a th:href="@{/}" class="btn-view">🛍️ Mua sắm ngay</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

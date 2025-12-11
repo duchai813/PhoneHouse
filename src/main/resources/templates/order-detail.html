@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .order-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 40px;
+            color: white;
+        }
+
+        .order-id {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .order-body {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        thead th {
+            padding: 15px;
+            text-align: left;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f3f5;
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 20px 15px;
+            color: #2d3436;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .price {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .total-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 20px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .order-header {
+                padding: 25px 20px;
+            }
+
+            .order-body {
+                padding: 25px 20px;
+            }
+
+            .order-id {
+                font-size: 22px;
+            }
+
+            .order-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            thead th, tbody td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/orders}" class="back-link">
+        ← Quay lại lịch sử
+    </a>
+
+    <div class="order-card">
+        <div class="order-header">
+            <div class="order-id">📦 Đơn hàng #[[${order.id}]]</div>
+
+            <div class="order-info-grid">
+                <div class="info-item">
+                    <div class="info-label">📅 Ngày tạo</div>
+                    <div class="info-value">[[${order.createDate}]]</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">🏷️ Trạng thái</div>
+                    <div class="info-value">
+                        <span class="status-badge status-pending" th:if="${order.status} == 'Pending'">[[${order.status}]]</span>
+                        <span class="status-badge status-processing" th:if="${order.status} == 'Processing'">[[${order.status}]]</span>
+                        <span class="status-badge status-completed" th:if="${order.status} == 'Completed'">[[${order.status}]]</span>
+                        <span class="status-badge status-cancelled" th:if="${order.status} == 'Cancelled'">[[${order.status}]]</span>
+                        <span class="status-badge status-pending" th:unless="${order.status} == 'Pending' or ${order.status} == 'Processing' or ${order.status} == 'Completed' or ${order.status} == 'Cancelled'">[[${order.status}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-body">
+            <div class="section-title">📍 Địa chỉ giao hàng</div>
+            <p style="color: #495057; margin-bottom: 30px; line-height: 1.6;">[[${order.address}]]</p>
+
+            <div class="section-title">🛍️ Sản phẩm</div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td><span class="product-name">[[${item.phone.name}]]</span></td>
+                    <td><span class="price">[[${item.price}]] đ</span></td>
+                    <td>[[${item.quantity}]]</td>
+                    <td><span class="price">[[${item.price * item.quantity}]] đ</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="total-section">
+                <span class="total-label">Tổng cộng:</span>
+                <span class="total-amount" th:text="${#aggregates.sum(items.![price * quantity])} + ' đ'"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

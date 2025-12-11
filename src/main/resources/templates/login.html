@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng nhập</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header h2 {
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .login-body {
+            padding: 40px;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #c33;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .login-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 30px 20px;
+            }
+
+            .login-body {
+                padding: 30px 20px;
+            }
+
+            .login-header h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <h2>🔐 Đăng nhập</h2>
+        <p>Chào mừng bạn trở lại Phone Store</p>
+    </div>
+
+    <div class="login-body">
+        <div th:if="${error}" class="error-message">
+            ⚠️ [[${error}]]
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+            </div>
+
+            <button type="submit" class="btn-login">Đăng nhập</button>
+        </form>
+
+        <div class="login-footer">
+            <a th:href="@{/}">← Quay lại trang chủ</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

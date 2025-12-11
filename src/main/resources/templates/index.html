@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Store - Điện thoại chính hãng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .header-main {
+            padding: 25px 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 42px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-form {
+            position: relative;
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+
+        .search-form:focus-within {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            transform: translateY(-2px);
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .search-form input:focus {
+            outline: none;
+        }
+
+        .search-form input::placeholder {
+            color: #adb5bd;
+        }
+
+        .btn-search {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3e8d 100%);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-link:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .cart-link {
+            background: white !important;
+            color: #667eea !important;
+            font-weight: 700;
+            padding: 12px 24px;
+        }
+
+        .cart-badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .brands-bar {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 88px;
+            z-index: 999;
+        }
+
+        .brands-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px 0;
+            scrollbar-width: thin;
+        }
+
+        .brands-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .brands-scroll::-webkit-scrollbar-track {
+            background: #f1f3f5;
+            border-radius: 10px;
+        }
+
+        .brands-scroll::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .brand-chip {
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .brand-chip:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .brand-chip.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .products-section {
+            padding: 50px 0 30px;
+        }
+
+        .section-header {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .product-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25);
+        }
+
+        .product-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .product-img-wrap {
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.4s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .product-info {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2d3436;
+            text-decoration: none;
+            margin-bottom: 12px;
+            display: block;
+            transition: color 0.3s;
+            line-height: 1.4;
+            min-height: 48px;
+        }
+
+        .product-name:hover {
+            color: #667eea;
+        }
+
+        .product-color {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .product-color-label {
+            font-weight: 600;
+        }
+
+        .product-color-value {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 18px;
+        }
+
+        .btn-add-cart {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* PAGINATION STYLES */
+        .pagination-wrapper {
+            padding: 50px 0 80px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+            min-width: 45px;
+            height: 45px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .pagination a {
+            background: white;
+            color: #495057;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .pagination a:hover:not(.disabled) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination .active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            border: 2px solid rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .pagination .disabled {
+            background: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .pagination .nav-btn {
+            padding: 0 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+            min-width: auto;
+        }
+
+        .pagination .nav-btn:hover:not(.disabled) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .pagination .dots {
+            color: #adb5bd;
+            pointer-events: none;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        @media (max-width: 1024px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .search-box {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo-text h1 {
+                font-size: 22px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 20px;
+            }
+
+            .product-img-wrap {
+                height: 180px;
+            }
+
+            .product-info {
+                padding: 18px;
+            }
+
+            .product-name {
+                font-size: 15px;
+                min-height: auto;
+            }
+
+            .product-price {
+                font-size: 20px;
+            }
+
+            .pagination a,
+            .pagination span {
+                min-width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+
+            .pagination .nav-btn {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="header-main">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">📱</span>
+                    <div class="logo-text">
+                        <h1>Phone Store</h1>
+                        <p>Chính hãng - Uy tín</p>
+                    </div>
+                </a>
+
+                <div class="search-box">
+                    <form th:action="@{/}" method="get" class="search-form">
+                        <input type="text"
+                               name="keyword"
+                               th:value="${keyword}"
+                               placeholder="🔍 Tìm kiếm iPhone, Samsung, Xiaomi...">
+                        <button type="submit" class="btn-search">Tìm kiếm</button>
+                    </form>
+                </div>
+
+                <div class="header-actions">
+                    <a th:href="@{/cart}" class="header-link cart-link">
+                        🛒 Giỏ hàng
+                        <span class="cart-badge">[[${cartCount}]]</span>
+                    </a>
+                    <a th:href="@{/orders}" class="header-link">
+                        📦 Đơn hàng
+                    </a>
+                    <a th:if="${sessionUser != null and sessionUser.role == 'ADMIN'}"
+                       th:href="@{/admin}" class="header-link">
+                        ⚙️ Quản trị
+                    </a>
+                    <a th:if="${sessionUser != null}"
+                       th:href="@{/logout}" class="header-link">
+                        👋 Đăng xuất
+                    </a>
+                    <a th:if="${sessionUser == null}"
+                       th:href="@{/login}" class="header-link">
+                        🔐 Đăng nhập
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="brands-bar">
+    <div class="container">
+        <div class="brands-scroll">
+            <a th:href="@{/}"
+               class="brand-chip"
+               th:classappend="${brandId == null} ? 'active' : ''">
+                ⭐ Tất cả
+            </a>
+            <a th:each="b : ${brands}"
+               th:href="@{/ (brandId=${b.id})}"
+               th:text="${b.name}"
+               class="brand-chip"
+               th:classappend="${brandId == b.id} ? 'active' : ''">
+            </a>
+        </div>
+    </div>
+</div>
+
+<section class="products-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">✨ Sản phẩm nổi bật</h2>
+            <p class="section-subtitle">Chọn ngay điện thoại yêu thích của bạn với giá tốt nhất</p>
+        </div>
+
+        <div class="products-grid" th:if="${phones != null and !phones.isEmpty()}">
+            <div th:each="p : ${phones}" class="product-card">
+                <div class="product-img-wrap">
+                    <img th:src="@{/images/{img}(img=${p.image})}"
+                         th:alt="${p.name}"
+                         class="product-img"
+                         loading="lazy">
+                </div>
+
+                <div class="product-info">
+                    <a th:href="@{'/phone/' + ${p.id}}" class="product-name">[[${p.name}]]</a>
+                    <div class="product-price">[[${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}]]đ</div>
+                    <a th:href="@{'/cart/add/' + ${p.id}}" class="btn-add-cart">
+                        <span>🛒</span>
+                        <span>Thêm vào giỏ</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${phones == null or phones.isEmpty()}">
+            <div class="empty-state-icon">📱</div>
+            <h3>Không tìm thấy sản phẩm</h3>
+            <p>Vui lòng thử tìm kiếm với từ khóa khác</p>
+        </div>
+    </div>
+</section>
+
+<!-- PAGINATION -->
+<div class="pagination-wrapper" th:if="${totalPages != null and totalPages > 1}">
+    <div class="container">
+        <div class="pagination">
+            <!-- Previous Button -->
+            <a th:href="@{/(page=${currentPage - 1}, brandId=${brandId}, keyword=${keyword})}"
+               th:classappend="${currentPage == 1} ? 'disabled nav-btn' : 'nav-btn'"
+               class="nav-btn">
+                ← Trước
+            </a>
+
+            <!-- First Page -->
+            <a th:if="${currentPage > 3}"
+               th:href="@{/(page=1, brandId=${brandId}, keyword=${keyword})}">
+                1
+            </a>
+
+            <!-- Dots -->
+            <span th:if="${currentPage > 4}" class="dots">...</span>
+
+            <!-- Pages around current -->
+            <th:block th:each="i : ${#numbers.sequence(
+                currentPage - 2 < 1 ? 1 : currentPage - 2,
+                currentPage + 2 > totalPages ? totalPages : currentPage + 2
+            )}">
+                <span th:if="${i == currentPage}" class="active">[[${i}]]</span>
+                <a th:if="${i != currentPage}"
+                   th:href="@{/(page=${i}, brandId=${brandId}, keyword=${keyword})}"
+                   th:text="${i}">
+                </a>
+            </th:block>
+
+            <!-- Dots -->
+            <span th:if="${currentPage < totalPages - 3}" class="dots">...</span>
+
+            <!-- Last Page -->
+            <a th:if="${currentPage < totalPages - 2}"
+               th:href="@{/(page=${totalPages}, brandId=${brandId}, keyword=${keyword})}"
+               th:text="${totalPages}">
+            </a>
+
+            <!-- Next Button -->
+            <a th:href="@{/(page=${currentPage + 1}, brandId=${brandId}, keyword=${keyword})}"
+               th:classappend="${currentPage >= totalPages} ? 'disabled nav-btn' : 'nav-btn'"
+               class="nav-btn">
+                Sau →
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

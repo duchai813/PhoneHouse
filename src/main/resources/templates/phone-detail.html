@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${phone.name} + ' - Phone Store'">Chi tiết sản phẩm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+        }
+
+        .breadcrumb a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .product-section {
+            padding: 40px 0;
+        }
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .product-images {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .thumbnail-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .thumbnail {
+            aspect-ratio: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2d3436;
+            line-height: 1.3;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 18px;
+        }
+
+        .rating-text {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .price-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .current-price {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .original-price {
+            font-size: 20px;
+            color: #6c757d;
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-left: 12px;
+        }
+
+        .stock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #d1e7dd;
+            color: #0f5132;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .option-group {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .option-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .option-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .color-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .color-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-buy-now {
+            flex: 1;
+            padding: 18px 32px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-buy-now:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .promo-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #ffc107;
+        }
+
+        .promo-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .promo-list {
+            list-style: none;
+        }
+
+        .promo-list li {
+            color: #856404;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .promo-list li::before {
+            content: '🎁';
+            position: absolute;
+            left: 0;
+        }
+
+        .specs-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2d3436;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #f1f3f5;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .spec-item {
+            display: flex;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .spec-label {
+            font-weight: 700;
+            color: #495057;
+            min-width: 140px;
+        }
+
+        .spec-value {
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .product-images {
+                position: relative;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-layout,
+            .specs-section {
+                padding: 24px;
+            }
+
+            .main-image {
+                height: 350px;
+            }
+
+            .product-title {
+                font-size: 22px;
+            }
+
+            .current-price {
+                font-size: 28px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="header">
+    <div class="container">
+        <div class="breadcrumb">
+            <a th:href="@{/}">📱 Điện thoại</a>
+            <span>›</span>
+            <span th:text="${phone.brand.name}">Brand</span>
+        </div>
+        <h1 class="page-title" th:text="${phone.name}">iPhone 11 cũ</h1>
+    </div>
+</div>
+
+<section class="product-section">
+    <div class="container">
+        <div class="product-layout">
+            <!-- Product Images -->
+            <div class="product-images">
+                <div class="main-image">
+                    <img th:src="@{/images/{img}(img=${phone.image})}"
+                         th:alt="${phone.name}"
+                         id="mainImage">
+                </div>
+                <div class="thumbnail-list">
+                    <div class="thumbnail active">
+                        <img th:src="@{/images/{img}(img=${phone.image})}" th:alt="${phone.name}">
+                    </div>
+                    <!-- Có thể thêm nhiều ảnh khác -->
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info">
+                <h1 class="product-title" th:text="${phone.name}">Điện thoại iPhone 11 cũ</h1>
+
+                <div class="product-rating">
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-text">(1037 đánh giá)</span>
+                </div>
+
+                <div class="price-box">
+                    <div class="current-price" th:text="${#numbers.formatDecimal(phone.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                        5.350.000đ
+                    </div>
+                    <div>
+                        <span class="original-price">7.950.000đ</span>
+                        <span class="discount-badge">-36%</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="stock-status" th:if="${phone.quantity > 0}">
+                        ✓ Còn hàng
+                    </span>
+                    <span class="stock-status" style="background:#f8d7da; color:#842029;" th:if="${phone.quantity == 0}">
+                        ✕ Hết hàng
+                    </span>
+                </div>
+
+                <!-- Màu sắc -->
+                <!-- MÀU SẮC - DANH SÁCH CÁC PHIÊN BẢN MÀU -->
+                <div class="option-group" th:if="${variants != null}">
+                    <label class="option-label">Màu sắc</label>
+
+                    <div class="option-buttons">
+
+                        <a th:each="v : ${variants}"
+                           th:href="@{'/phone/' + ${v.id}}"
+                           class="option-btn"
+                           th:text="${v.color}"
+                           th:classappend="${v.id.equals(phone.id)} ? ' active' : ''">
+                        </a>
+
+                    </div>
+                </div>
+
+
+                <!-- Bộ nhớ -->
+                <div class="option-group" th:if="${romVariants != null}">
+                    <label class="option-label">Bộ nhớ</label>
+                    <div class="option-buttons">
+                        <a th:each="v : ${romVariants}"
+                           th:href="@{'/phone/' + ${v.id}}"
+                           th:text="${v.rom}"
+                           class="option-btn"
+                           th:classappend="${v.id == phone.id} ? ' active' : ''">
+                        </a>
+                    </div>
+                </div>
+                <!-- RAM -->
+                <div class="option-group" th:if="${ramVariants != null}">
+                    <label class="option-label">RAM</label>
+                    <div class="option-buttons">
+                        <a th:each="v : ${ramVariants}"
+                           th:href="@{'/phone/' + ${v.id}}"
+                           th:text="${v.ram}"
+                           class="option-btn"
+                           th:classappend="${v.id == phone.id} ? ' active' : ''">
+                        </a>
+                    </div>
+                </div>
+
+
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-add-cart" th:onclick="'window.location.href=\'' + @{/cart/add/{id}(id=${phone.id})} + '\''">
+                        <span>🛒</span>
+                        <span>Thêm vào giỏ hàng</span>
+                    </button>
+                    <button class="btn-buy-now" th:onclick="'window.location.href=\'' + @{/cart/add/{id}(id=${phone.id})} + '\''">
+                        Mua ngay
+                    </button>
+                </div>
+
+                <!-- Khuyến mãi -->
+                <div class="promo-box">
+                    <div class="promo-title">
+                        <span>🎉</span>
+                        <span>Khuyến mãi</span>
+                    </div>
+                    <ul class="promo-list">
+                        <li>Tặng: Miễn phí giao hàng toàn quốc</li>
+                        <li>Giảm thêm 5% khi mua 2 sản phẩm trở lên</li>
+                        <li>Bảo hành 12 tháng chính hãng</li>
+                        <li>Đổi trả trong 7 ngày nếu có lỗi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông số kỹ thuật -->
+        <div class="specs-section">
+            <h2 class="section-title">📋 Thông số kỹ thuật</h2>
+            <div class="specs-grid">
+                <div class="spec-item" th:if="${phone.screen != null}">
+                    <div class="spec-label">Màn hình:</div>
+                    <div class="spec-value" th:text="${phone.screen}">6.1 inch</div>
+                </div>
+                <div class="spec-item" th:if="${phone.ram != null}">
+                    <div class="spec-label">RAM:</div>
+                    <div class="spec-value" th:text="${phone.ram}">4GB</div>
+                </div>
+                <div class="spec-item" th:if="${phone.rom != null}">
+                    <div class="spec-label">Bộ nhớ trong:</div>
+                    <div class="spec-value" th:text="${phone.rom}">64GB</div>
+                </div>
+                <div class="spec-item" th:if="${phone.battery != null}">
+                    <div class="spec-label">Pin:</div>
+                    <div class="spec-value" th:text="${phone.battery}">3110 mAh</div>
+                </div>
+                <div class="spec-item" th:if="${phone.color != null}">
+                    <div class="spec-label">Màu sắc:</div>
+                    <div class="spec-value" th:text="${phone.color}">Đen</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Hãng:</div>
+                    <div class="spec-value" th:text="${phone.brand.name}">Apple</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; padding: 24px; background: #f8f9fa; border-radius: 12px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">📝 Mô tả sản phẩm</h3>
+                <p th:text="${phone.description}" style="color: #495057; line-height: 1.8;">
+                    Sản phẩm chính hãng, đầy đủ phụ kiện, bảo hành 12 tháng.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Thumbnail click handler
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            document.querySelector('.thumbnail.active')?.classList.remove('active');
+            this.classList.add('active');
+            const img = this.querySelector('img');
+            document.getElementById('mainImage').src = img.src;
+        });
+    });
+
+    // Option button handlers
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const group = this.closest('.option-group');
+            group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>

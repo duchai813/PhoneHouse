@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 36px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #636e72;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .menu-section {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            text-decoration: none;
+            color: #2d3436;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .menu-icon {
+            font-size: 32px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover .menu-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid,
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-section {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="dashboard-header">
+        <h2 class="page-title">
+            👨‍💼 Admin Dashboard
+        </h2>
+        <a th:href="@{/}" class="back-link">
+            ← Về trang chủ
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📱</div>
+            <div class="stat-label">Tổng số sản phẩm</div>
+            <div class="stat-value">[[${totalPhones}]]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-label">Tổng số đơn hàng</div>
+            <div class="stat-value">[[${totalOrders}]]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Tổng số tài khoản</div>
+            <div class="stat-value">[[${totalUsers}]]</div>
+        </div>
+    </div>
+
+    <div class="menu-section">
+        <h3 class="section-title">🔧 Quản lý hệ thống</h3>
+
+        <div class="menu-grid">
+            <a th:href="@{/admin/phones}" class="menu-item">
+                <div class="menu-icon">📱</div>
+                <span>Quản lý sản phẩm</span>
+            </a>
+
+            <a th:href="@{/admin/orders}" class="menu-item">
+                <div class="menu-icon">📦</div>
+                <span>Quản lý đơn hàng</span>
+            </a>
+
+            <a th:href="@{/admin/users}" class="menu-item">
+                <div class="menu-icon">👥</div>
+                <span>Quản lý tài khoản</span>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

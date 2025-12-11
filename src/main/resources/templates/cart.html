@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Giỏ hàng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 40px;
+            color: white;
+        }
+
+        .header h2 {
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .header a:hover {
+            opacity: 1;
+        }
+
+        .cart-content {
+            padding: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        thead tr {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        td {
+            padding: 20px 15px;
+            vertical-align: middle;
+        }
+
+        td img {
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .qty-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .qty-form input {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .qty-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-update {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-update:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            color: #dc3545;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-remove:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .total-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 24px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-clear {
+            padding: 15px 30px;
+            background: white;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-clear:hover {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .btn-checkout {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>Giỏ hàng của bạn</h2>
+        <a th:href="@{/}">← Quay lại trang chủ</a>
+    </div>
+
+    <div class="cart-content">
+        <table>
+            <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Tên</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+
+                <!-- ẢNH SẢN PHẨM -->
+                <td>
+                    <img th:src="@{/images/{img}(img=${item.image})}"
+                         alt="product" width="80" style="border-radius:10px;">
+                </td>
+
+                <!-- TÊN -->
+                <td><strong>[[${item.name}]]</strong></td>
+
+                <!-- GIÁ -->
+                <td class="price">[[${item.price}]]</td>
+
+                <!-- SỐ LƯỢNG -->
+                <td>
+                    <form th:action="@{/cart/update}" method="post" class="qty-form">
+                        <input type="hidden" name="id" th:value="${item.phoneId}">
+                        <input type="number" name="qty" th:value="${item.quantity}" min="1">
+                        <button type="submit" class="btn btn-update">Cập nhật</button>
+                    </form>
+                </td>
+
+                <!-- THÀNH TIỀN -->
+                <td class="price">[[${item.total}]]</td>
+
+                <!-- XÓA -->
+                <td>
+                    <a th:href="@{'/cart/remove/' + ${item.phoneId}}" class="btn-remove">✕ Xóa</a>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <span class="total-label">Tổng cộng:</span>
+            <span class="total-amount">[[${total}]]</span>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="@{/cart/clear}" class="btn-clear">Xóa hết giỏ hàng</a>
+            <a th:href="@{/checkout}" class="btn-checkout">Tiến hành đặt hàng →</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

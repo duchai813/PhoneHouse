@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Checkout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            font-size: 36px;
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #636e72;
+            font-size: 16px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .checkout-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-order {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .cart-items {
+            list-style: none;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .cart-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .item-quantity {
+            font-size: 14px;
+            color: #636e72;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .total-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        @media (max-width: 868px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h2 {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .checkout-card {
+                padding: 25px 20px;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h2>🛒 Hoàn tất đơn hàng</h2>
+        <p>Vui lòng kiểm tra thông tin và xác nhận đơn hàng</p>
+    </div>
+
+    <div class="checkout-grid">
+        <div class="checkout-card">
+            <h3 class="card-title">📋 Thông tin đặt hàng</h3>
+
+            <form th:action="@{/checkout}" method="post">
+                <div class="form-group">
+                    <label for="address">📍 Địa chỉ giao hàng</label>
+                    <textarea id="address" name="address" rows="5" placeholder="Nhập địa chỉ đầy đủ của bạn..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-order">
+                    ✓ Xác nhận đặt hàng
+                </button>
+            </form>
+        </div>
+
+        <div class="checkout-card">
+            <h3 class="card-title">🛍️ Giỏ hàng của bạn</h3>
+
+            <ul class="cart-items">
+                <li th:each="i : ${items}" class="cart-item">
+                    <div class="item-info">
+                        <div class="item-name">[[${i.name}]]</div>
+                        <div class="item-quantity">Số lượng: [[${i.quantity}]]</div>
+                    </div>
+                    <div class="item-price">[[${i.total}]] đ</div>
+                </li>
+            </ul>
+
+            <div class="total-section">
+                <span class="total-label">Tổng cộng:</span>
+                <span class="total-amount">[[${total}]] đ</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
